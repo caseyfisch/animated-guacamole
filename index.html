@@ -3,43 +3,22 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
-    <title>GUAC DROP</title>
+    <title>SPACE GAME</title>
   
     <!-- CSS  -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
     <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
     
-    <style>
-      #gameboard {
-        height: 400px;
-        width: 500px;
-        position:relative;
-      }
-      .piece {
-        background-color: #AAF;
-        width: 50px;
-        height: 50px;
-        position: absolute;
-        left: 0px;
-        top: 0px;
-      }
-      .ship {
-        position:absolute;
-        height: 50px;
-        width: 50px;
-        left: 0px;
-        top: 0px;
-      }
-      </style>
   </head>
   
   <body>
     <header>
     <nav class="indigo" role="navigation">
-      <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Guac Drop!</a>
+      <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo brand-logo-small">
+        space junk</a>
         <ul class="right hide-on-med-and-down">
-          <li><a href="#"></a></li>
+          <li><i class="material-icons">stars</i></li>
         </ul>
       </div>
     </nav>
@@ -153,6 +132,8 @@
           gameStarted = true;
         }
         
+        
+        // TODO(casey): Make this more robust
         function checkCollision() {
           var pieces = document.getElementsByClassName("piece");
           for (var i = 0; i < pieces.length; i++) {
