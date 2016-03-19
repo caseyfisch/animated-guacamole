@@ -1,1 +1,220 @@
-Hello World!
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+    <title>GUAC DROP</title>
+  
+    <!-- CSS  -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    
+    <style>
+      #gameboard {
+        height: 400px;
+        width: 500px;
+        position:relative;
+      }
+      .piece {
+        background-color: #AAF;
+        width: 50px;
+        height: 50px;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+      }
+      .ship {
+        position:absolute;
+        height: 50px;
+        width: 50px;
+        left: 0px;
+        top: 0px;
+      }
+      </style>
+  </head>
+  
+  <body>
+    <header>
+    <nav class="indigo" role="navigation">
+      <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Guac Drop!</a>
+        <ul class="right hide-on-med-and-down">
+          <li><a href="#"></a></li>
+        </ul>
+      </div>
+    </nav>
+    </header>
+    
+    <main>
+    <div class="container">
+      <div class="row">
+        <div class="col s12 m12">
+          <div class="card blue-grey" id="instructions">
+            <div class="card-content white-text">
+              <span class="card-title">Instructions</span>
+              <p>Use the LEFT and RIGHT arrow keys to move your spaceship.  Move out of the way of space junk, 
+              but try to collect shooting stars for bonus points!</p>
+            </div>
+            <!--<div class="card-action">-->
+            <!--  <a class="amber-text text-lighten-3" href="#">Got It!</a>-->
+            <!--</div>-->
+          </div>
+        </div>
+      </div>
+      
+      <div class="container center-align">
+        <a class="waves-effect waves-light btn-large cyan center-align" id="startButton">Start Game!</a>
+      </div>
+    </div>
+    
+    <div class="section">
+      <div class="container">
+        <div class="row center-block">
+          <div class="col s12 m12 light-green lighten-3" id="gameboard">
+            <!--<div id="gameboard" class="center-block light-green lighten-3">Game will be here</div>-->
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    </main>
+
+    <footer class="page-footer indigo darken-2">
+      <div class="container">
+        <div class="row">
+          <div class="col l6 s12">
+            <h5 class="white-text">Crowd Programming: Project 5</h5>
+            <p class="grey-text text-lighten-4">Having Turkers Play a Game, developed by Casey.</p>
+            <p class="grey-text text-lighten-4">All graphics by <a target="blank" class="orange-text text-lighten-3" href="https://thenounproject.com/oliviustoian/">Oliviu Stoian</a> from the Noun Project</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-copyright">
+        <div class="container">
+        Made by <a class="orange-text text-lighten-3" target="blank" href="http://materializecss.com">Materialize</a>
+        </div>
+      </div>
+    </footer>
+  
+  
+    <!--  Scripts-->
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="js/materialize.js"></script>
+    <script src="js/init.js"></script>
+    
+    <script>
+      var piecex = 0;
+      var piecey = 0;
+      var pieceheight = 50;
+      var piecewidth = 50;
+      
+      var shipx = 0;
+      var shipy =  0;
+      var shipwidth = 50;
+      var shipheight = 50;
+      
+      var boardwidth = 500;
+      var boardheight = 400;
+      var increment = 25;
+      
+      var gameStarted = false;
+      var gameOver = false;
+      
+      var possiblePieces = [
+        "icons/galaxy.svg",
+        "icons/jupiter.svg",
+        "icons/meteor.svg",
+        "icons/saturn.svg",
+        "icons/spacemonkey.svg",
+        "icons/ufo.svg",
+      ];
+
+      $(document).ready(function() {
+        var gameboard = document.getElementById("gameboard");
+        // when adding pieces, remember to add an id to identify them later
+        // could be cool to set variable increment depending on piece?
+        // would make matrix logic difficult... 
+        
+        var randomSeed = Math.floor(Math.random() * (possiblePieces.length));
+        console.log(randomSeed);
+        var pieceType = possiblePieces[randomSeed];
+        console.log(pieceType);
+        var piece = $("<div class='piece'><img src='" + pieceType + "'/></div>");
+        var ship = $("<div class='ship amber lighten-2'><img src='icons/ship.svg'/></div>");
+        $(gameboard).append(piece);
+        $(gameboard).append(ship);
+        
+        shipy = (boardheight - shipheight);
+        $(".ship").css("top", shipy + "px");
+        $(".piece").css("left", 0);
+        
+        document.getElementById('startButton').addEventListener('click', startGame, false);
+        function startGame(){ 
+          gameStarted = true;
+        }
+        
+        function checkCollision() {
+          var pieces = document.getElementsByClassName("piece");
+          for (var i = 0; i < pieces.length; i++) {
+            var curPiece = pieces[i];
+            var pieceLeft =  parseInt(curPiece.style.left);
+            var pieceBottom = parseInt(curPiece.style.top) + pieceheight;
+            
+            console.log(pieceBottom);
+            console.log(shipy);
+            console.log("-------");
+            if (!(pieceBottom > shipy)) {
+              continue;
+            }
+            
+            console.log(pieceLeft);
+            console.log(shipx);
+            console.log("---");
+            if (pieceLeft === shipx) {
+              console.log("collision!!");
+              gameOver = true;
+              alert("Game over!");
+              break;
+            }
+            
+          }
+        }
+        
+        $(document).keydown(function(e) {
+          if (!gameOver) {
+            if(e.keyCode==37) {
+              // left arrow clicked
+              console.log("left arrow");
+              shipx -= increment;
+              if (shipx < 0) {
+                shipx += boardwidth - increment;
+              }
+            } else if(e.keyCode == 39) {
+              // right arrow clicked
+              console.log("right arrow");
+              shipx += increment;
+              if (shipx + shipwidth > boardwidth) {
+                shipx -= boardwidth - increment;
+              }
+            }
+            $(".ship").css("left", shipx + "px");
+          }
+        });
+        
+        
+        setInterval(function() {
+          if (gameStarted && !gameOver) {
+            piecey += increment;
+            if (piecey + pieceheight > boardheight) {
+              piecey = 0;
+            }
+            $(".piece").css("top", piecey + "px");
+            
+            checkCollision();
+          }
+        }, 1000);
+      })
+    </script>
+
+  </body>
+</html>
