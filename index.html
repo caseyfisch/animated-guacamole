@@ -98,6 +98,8 @@
       
       var gameStarted = false;
       var gameOver = false;
+      var gameWon = false;
+      
       var boardViewRange = boardheight / pieceheight;
       
       
@@ -111,6 +113,18 @@
         "icons/ufo.svg",
       ];
       
+      var pieceColor = [
+        "purple lighten-3",
+        "red lighten-3",
+        "brown lighten-3",
+        "yellow lighten-4",
+        "indigo lighten-4",
+        "pink lighten-5",
+        "light-blue lighten-3",
+      ];
+      
+      // TODO(casey): Make this longer / harder 
+      // Not sure about random generator (for Part 2)
       var boardValues = [
         [0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
@@ -166,16 +180,6 @@
       
       $(document).ready(function() {
         var gameboard = document.getElementById("gameboard");
-        // when adding pieces, remember to add an id to identify them later
-        // dunno if you need this ^ just use the board 2D matrix
-        
-        // could be cool to set variable increment depending on piece?
-        // would make matrix logic difficult... 
-        
-        
-        var randomSeed = Math.floor(Math.random() * (possiblePieces.length));
-        var pieceType = possiblePieces[randomSeed];
-        
         var ship = $("<div class='ship amber lighten-2'><img src='icons/ship.svg'/></div>");
         $(gameboard).append(ship);
         
@@ -187,14 +191,19 @@
           gameStarted = true;
         }
         
+        // TODO(casey): Add shooting stars or something for bonus
+        
         function generateBoard() {
           var i, j;
+          
+          // destroy board 
           for (i = 0; i < boardViewRange; i++) {
             for (j = 0; j < (boardwidth / piecewidth); j++) {
               $("#" + i + j).remove();
             }
           }
           // generate current view of gameboard
+          // based on offset into boardValues array
           var startIndex = boardValues.length - boardOffset - boardViewRange;
           var endIndex = startIndex + boardViewRange;
           if (startIndex < 0) {
@@ -205,12 +214,11 @@
 
           for (i = 0; i < boardViewRange; i++) {
             var currentRow = currentBoard[i];
-
             for (j = 0; j < currentRow.length; j++) {
-              console.log(currentRow[j]);
               if (currentRow[j] !== 0) {
-                var pieceType = possiblePieces[currentRow[j] - 1];
-                var piece = $("<div class='piece' id=" + i + j + "><img src='" + pieceType + "'/></div>");
+                var pieceIndex = currentRow[j] - 1;
+                var pieceType = possiblePieces[pieceIndex];
+                var piece = $("<div class='piece " + pieceColor[pieceIndex] + "' id=" + i + j + "><img src='" + pieceType + "'/></div>");
                 $(gameboard).append(piece);
 
                 $("#" + i + j).css("left", j * piecewidth);
@@ -249,14 +257,12 @@
           if (!gameOver) {
             if(e.keyCode==37) {
               // left arrow clicked
-              console.log("left arrow");
               shipx -= increment;
               if (shipx < 0) {
                 shipx += boardwidth - increment;
               }
             } else if(e.keyCode == 39) {
               // right arrow clicked
-              console.log("right arrow");
               shipx += increment;
               if (shipx + shipwidth > boardwidth) {
                 shipx -= boardwidth - increment;
@@ -270,13 +276,10 @@
         setInterval(function() {
           if (gameStarted && !gameOver) {
             var flag = generateBoard();
-            // piecey += increment;
-            // if (piecey + pieceheight > boardheight) {
-            //   piecey = 0;
-            // }
-            // $(".piece").css("top", piecey + "px");
+
             if (flag == 1) {
               gameOver = true;
+              gameWon = true;
             }
             
             checkCollision();
