@@ -98,40 +98,129 @@
       
       var gameStarted = false;
       var gameOver = false;
+      var boardViewRange = boardheight / pieceheight;
+      
       
       var possiblePieces = [
         "icons/galaxy.svg",
         "icons/jupiter.svg",
         "icons/meteor.svg",
         "icons/saturn.svg",
+        "icons/solarsys.svg",
         "icons/spacemonkey.svg",
         "icons/ufo.svg",
       ];
+      
+      var boardValues = [
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,1,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,2,0,0,0,5,0,4,0,3],
+        [0,0,1,0,7,0,0,6,0,2],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,5,0,6,7,2,1,0,0],
+        [0,1,0,4,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,4,0],
+        [0,2,0,3,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,6,0,0],
+        [0,1,5,0,2,4,0,5,0,3],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,6,0,0,0,0,0,0],
+        [0,0,0,0,0,7,4,3,2,0],
+        [0,0,2,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,0,0,0],
+        [0,3,0,0,0,0,0,4,0,0],
+        [0,2,0,6,0,5,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [1,3,4,0,0,0,1,2,7,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,5,0,0,1,0,3,0],
+        [1,1,0,0,0,0,0,0,0,2],
+        [0,0,0,0,7,0,0,0,6,0],
+        [0,0,1,2,0,0,5,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,1,4,0,0,1],
+        [0,0,0,3,0,0,0,4,5,6],
+        [0,0,1,0,0,0,0,2,0,0],
+        // bottom rows are blank starting screen
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+      ];
 
+      var boardOffset = 0;
+      
       $(document).ready(function() {
         var gameboard = document.getElementById("gameboard");
         // when adding pieces, remember to add an id to identify them later
+        // dunno if you need this ^ just use the board 2D matrix
+        
         // could be cool to set variable increment depending on piece?
         // would make matrix logic difficult... 
         
+        
         var randomSeed = Math.floor(Math.random() * (possiblePieces.length));
-        console.log(randomSeed);
         var pieceType = possiblePieces[randomSeed];
-        console.log(pieceType);
-        var piece = $("<div class='piece'><img src='" + pieceType + "'/></div>");
+        
         var ship = $("<div class='ship amber lighten-2'><img src='icons/ship.svg'/></div>");
-        $(gameboard).append(piece);
         $(gameboard).append(ship);
         
         shipy = (boardheight - shipheight);
         $(".ship").css("top", shipy + "px");
-        $(".piece").css("left", 0);
-        
+
         document.getElementById('startButton').addEventListener('click', startGame, false);
         function startGame(){ 
           gameStarted = true;
         }
         
+        function generateBoard() {
+          var i, j;
+          for (i = 0; i < boardViewRange; i++) {
+            for (j = 0; j < (boardwidth / piecewidth); j++) {
+              $("#" + i + j).remove();
+            }
+          }
+          // generate current view of gameboard
+          var startIndex = boardValues.length - boardOffset - boardViewRange;
+          var endIndex = startIndex + boardViewRange;
+          if (startIndex < 0) {
+            return 1;
+          }
+
+          var currentBoard = boardValues.slice(startIndex, endIndex);
+
+          for (i = 0; i < boardViewRange; i++) {
+            var currentRow = currentBoard[i];
+
+            for (j = 0; j < currentRow.length; j++) {
+              console.log(currentRow[j]);
+              if (currentRow[j] !== 0) {
+                var pieceType = possiblePieces[currentRow[j] - 1];
+                var piece = $("<div class='piece' id=" + i + j + "><img src='" + pieceType + "'/></div>");
+                $(gameboard).append(piece);
+
+                $("#" + i + j).css("left", j * piecewidth);
+                $("#" + i + j).css("top", i * pieceheight);
+              }
+            }
+          }
+          
+          boardOffset += 1;
+        }
         
         // TODO(casey): Make this more robust
         function checkCollision() {
@@ -141,16 +230,11 @@
             var pieceLeft =  parseInt(curPiece.style.left);
             var pieceBottom = parseInt(curPiece.style.top) + pieceheight;
             
-            console.log(pieceBottom);
-            console.log(shipy);
-            console.log("-------");
+            
             if (!(pieceBottom > shipy)) {
               continue;
             }
-            
-            console.log(pieceLeft);
-            console.log(shipx);
-            console.log("---");
+
             if (pieceLeft === shipx) {
               console.log("collision!!");
               gameOver = true;
@@ -185,11 +269,15 @@
         
         setInterval(function() {
           if (gameStarted && !gameOver) {
-            piecey += increment;
-            if (piecey + pieceheight > boardheight) {
-              piecey = 0;
+            var flag = generateBoard();
+            // piecey += increment;
+            // if (piecey + pieceheight > boardheight) {
+            //   piecey = 0;
+            // }
+            // $(".piece").css("top", piecey + "px");
+            if (flag == 1) {
+              gameOver = true;
             }
-            $(".piece").css("top", piecey + "px");
             
             checkCollision();
           }
