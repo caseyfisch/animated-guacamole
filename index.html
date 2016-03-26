@@ -183,9 +183,10 @@
 
       $(document).ready(function() {
         var assignmentId = document.getElementsByName("assignmentId")[0].value;
+        var startDisabled = false;
         if (assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE") {
-          console.log("in if");
           document.getElementById("startButton").className += " disabled";
+          startDisabled = true;
         }
         
         var gameboard = document.getElementById("gameboard");
@@ -197,7 +198,7 @@
 
         document.getElementById('startButton').addEventListener('click', startGame, false);
         function startGame(){ 
-          if (!gameStarted) {
+          if (!gameStarted && !startDisabled) {
             gameStarted = true;
             gameInit = true;
             startTime = new Date().getTime();
