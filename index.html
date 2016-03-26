@@ -10,6 +10,9 @@
     <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
     <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
     
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="js/mturk.js"></script>
+    
   </head>
   
   <body>
@@ -31,8 +34,8 @@
           <div class="card blue-grey" id="instructions">
             <div class="card-content white-text">
               <span class="card-title">Instructions</span>
-              <p>Use the LEFT and RIGHT arrow keys to move your spaceship.  Move out of the way of space junk, 
-              but try to collect shooting stars for bonus points!</p>
+              <p>Use the LEFT and RIGHT arrow keys to move your spaceship.  Move out of the way of space junk.
+              Game ends when you earn $2.00 or your spaceship collides with an obstacle.</p>
             </div>
             <!--<div class="card-action">-->
             <!--  <a class="amber-text text-lighten-3" href="#">Got It!</a>-->
@@ -42,7 +45,7 @@
       </div>
       
       <div class="container center-align">
-        <a class="waves-effect waves-light btn-large cyan center-align" id="startButton">Start Game!</a>
+        <a class="waves-effect waves-light btn-large orange lighten-1 center-align" id="startButton">Start Game!</a>
       </div>
     </div>
     
@@ -109,6 +112,10 @@
       
       var playerScore = 0;
       var timeAlive = 0;
+      var dummy = [];
+      var startTime = 0;
+      var endTime = 0;
+
       
       var boardViewRange = boardheight / pieceheight;
       
@@ -127,7 +134,7 @@
         "red lighten-3",
         "brown lighten-3",
         "yellow lighten-4",
-        "indigo lighten-4",
+        "indigo lighten-2",
         "pink lighten-5",
         "light-blue lighten-3",
       ];
@@ -176,7 +183,7 @@
 
       $(document).ready(function() {
         var gameboard = document.getElementById("gameboard");
-        var ship = $("<div class='ship amber lighten-2'><img src='icons/ship.svg'/></div>");
+        var ship = $("<div class='ship orange lighten-1'><img src='icons/ship.svg'/></div>");
         $(gameboard).append(ship);
         
         shipy = (boardheight - shipheight);
@@ -187,19 +194,25 @@
           if (!gameStarted) {
             gameStarted = true;
             gameInit = true;
+            startTime = new Date().getTime();
           }
         }
         
-        // TODO(casey): Add shooting stars or something for bonus
+        function endGame() {
+          document.getElementById("wc").value = Math.round((endTime - startTime) / 1000);
+          document.getElementById("cs").value = dummy.length;
+          document.getElementById("td").value = timeAlive;
+          document.getElementById("er").value = dummy.length * 0.001;
+          
+        }
         
         function generateBoard() {
           var i, j;
-          
           var milliseconds = new Date().getTime();
           var index;
 
           if (gameInit) {
-            console.log("in init");
+            //console.log("in init");
             // inject some padding into the board so ship doesn't die immediately
             var temp = [
               [0,0,0,0,0,0,0,0,0,0],
@@ -210,22 +223,14 @@
               [0,0,0,0,0,0,0,0,0,0],
               [0,0,0,0,0,0,0,0,0,0],
             ];
-            
-            console.log("length: " + boardValues.length + ", mod by: " + (boardValues.length));
-
+  
             index = Math.floor((milliseconds / 1000) % (boardValues.length));
-            console.log(index + " ; " + (boardValues.length + temp.length - boardViewRange - index));
             index = (boardValues.length + temp.length - boardViewRange) - index;
-            
             boardValues = boardValues.slice(0, index + 1).concat(temp).concat(boardValues.slice(index + 1));
-            //console.log(boardValues);
-            //console.log("NEW length of array: " + boardValues.length);
+            
             gameInit = false;
           } else {
-            console.log("length: " + boardValues.length + ", mod by: " + (boardValues.length - boardViewRange));
-
             index = Math.floor((milliseconds / 1000) % (boardValues.length - boardViewRange + 1));
-            //console.log(index + " ; " + (boardValues.length - boardViewRange - index));
             index = (boardValues.length - boardViewRange) - index; 
           }
 
@@ -240,12 +245,7 @@
           // based on offset into boardValues array
           var startIndex = index;
           var endIndex = startIndex + boardViewRange;
-
-          console.log("start: " + startIndex + ", end: " + endIndex);
           var currentBoard = boardValues.slice(startIndex, endIndex);
-          //console.log(currentBoard);
-          //gameOver = true;
-
 
           for (i = 0; i < boardViewRange; i++) {
             var currentRow = currentBoard[i];
@@ -277,7 +277,7 @@
             }
 
             if (pieceLeft === shipx) {
-              console.log("collision!!");
+              //console.log("collision!!");
               gameOver = true;
               break;
             }
@@ -316,12 +316,27 @@
             
             checkCollision();
             if (gameOver) {
+              endTime = new Date().getTime();
               alert("Game over!");
+              endGame();
+              document.forms["mturk_form"].submit();
             }
             
             timeAlive += 50;
             document.getElementById("gamedur").innerHTML= Math.floor((timeAlive) / 1000) + " s";
             document.getElementById("earnings").innerHTML = "$" + ((Math.floor((timeAlive) / 1000)) * 0.001).toFixed(3);
+            
+            if (timeAlive % 1000 == 0) { // every 1 second
+              dummy.push("1");
+            }
+            
+            if (((Math.floor((timeAlive) / 1000)) * 0.001).toFixed(3) >= 2.000) {
+              gameOver = true;
+              endTime = new Date().getTime();
+              alert("Game over!");
+              endGame();
+              document.forms["mturk_form"].submit();
+            }
           }
         }, 50);
       })
