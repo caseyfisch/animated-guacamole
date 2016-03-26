@@ -182,13 +182,18 @@
 
 
       $(document).ready(function() {
-        var assignmentId = document.getElementsByName("assignmentId")[0].value;
+        var assignmentId = document.getElementsByName("assignmentId");
+        var id = "";
+        if (assignmentId.length > 1) {
+          id = assignmentId[0].value;
+        }
         var startDisabled = false;
-        if (assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE") {
+        if (id == "ASSIGNMENT_ID_NOT_AVAILABLE") {
           document.getElementById("startButton").className += " disabled";
           startDisabled = true;
         }
         
+        console.log("Hello?");
         var gameboard = document.getElementById("gameboard");
         var ship = $("<div class='ship orange lighten-1'><img src='icons/ship.svg'/></div>");
         $(gameboard).append(ship);
@@ -206,7 +211,7 @@
         }
         
         function endGame() {
-          document.getElementById("wc").value = Math.round((endTime - startTime) / 1000);
+          document.getElementById("wc").value = (endTime - startTime) / 1000;
           document.getElementById("cs").value = dummy.length;
           document.getElementById("td").value = timeAlive;
           document.getElementById("er").value = dummy.length * 0.001;
