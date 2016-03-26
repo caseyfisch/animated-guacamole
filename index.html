@@ -182,6 +182,11 @@
 
 
       $(document).ready(function() {
+        var assignmentId = document.getElementsByName("assignmentId")[0].value;
+        if (assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE") {
+          document.getElementById("startButton").disabled = true;
+        }
+        
         var gameboard = document.getElementById("gameboard");
         var ship = $("<div class='ship orange lighten-1'><img src='icons/ship.svg'/></div>");
         $(gameboard).append(ship);
