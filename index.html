@@ -319,11 +319,11 @@
               alert("Game over!");
             }
             
-            timeAlive += 1000;
+            timeAlive += 50;
             document.getElementById("gamedur").innerHTML= Math.floor((timeAlive) / 1000) + " s";
             document.getElementById("earnings").innerHTML = "$" + ((Math.floor((timeAlive) / 1000)) * 0.001).toFixed(3);
           }
-        }, 1000);
+        }, 50);
       })
     </script>
 
