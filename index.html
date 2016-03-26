@@ -49,7 +49,7 @@
     <div class="section">
       <div class="container">
         <div class="row center-block">
-          <div class="col s12 m12 light-green lighten-3" id="gameboard">
+          <div class="col s12 m12 indigo lighten-4" id="gameboard">
             <!--<div id="gameboard" class="center-block light-green lighten-3">Game will be here</div>-->
           </div>
         </div>
@@ -94,14 +94,16 @@
       
       var boardwidth = 500;
       var boardheight = 400;
-      var increment = 25;
+      var increment = 50;
       
       var gameStarted = false;
       var gameOver = false;
       var gameWon = false;
+      var gameDuration = 0;
+      var gameInit = false;
+      
       
       var boardViewRange = boardheight / pieceheight;
-      
       
       var possiblePieces = [
         "icons/galaxy.svg",
@@ -123,17 +125,14 @@
         "light-blue lighten-3",
       ];
       
-      // TODO(casey): Make this longer / harder 
-      // Not sure about random generator (for Part 2)
       var boardValues = [
+        [1,1,0,0,0,0,0,0,0,2],
+        [0,0,0,0,7,0,0,0,6,0],
+        [0,0,1,2,0,0,5,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,1,4,0,0,1],
+        [0,0,0,3,0,0,0,4,5,6],
+        [0,0,1,0,0,0,0,2,0,0],
         [0,0,1,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
         [0,2,0,0,0,5,0,4,0,3],
@@ -165,20 +164,11 @@
         [0,0,0,0,0,1,4,0,0,1],
         [0,0,0,3,0,0,0,4,5,6],
         [0,0,1,0,0,0,0,2,0,0],
-        // bottom rows are blank starting screen
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
       ];
 
-      var boardOffset = 0;
-      
+
       $(document).ready(function() {
+        console.log("length of array: " + boardValues.length);
         var gameboard = document.getElementById("gameboard");
         var ship = $("<div class='ship amber lighten-2'><img src='icons/ship.svg'/></div>");
         $(gameboard).append(ship);
@@ -189,6 +179,7 @@
         document.getElementById('startButton').addEventListener('click', startGame, false);
         function startGame(){ 
           gameStarted = true;
+          gameInit = true;
         }
         
         // TODO(casey): Add shooting stars or something for bonus
@@ -196,21 +187,58 @@
         function generateBoard() {
           var i, j;
           
+          var milliseconds = new Date().getTime();
+          var index;
+          //console.log(index);
+          
+          if (gameInit) {
+            console.log("in init");
+            // inject some padding into the board so ship doesn't die immediately
+            var temp = [
+              [0,0,0,0,0,0,0,0,0,0],
+              [0,0,0,0,0,0,0,0,0,0],
+              [0,0,0,0,0,0,0,0,0,0],
+              [0,0,0,0,0,0,0,0,0,0],
+              [0,0,0,0,0,0,0,0,0,0],
+              [0,0,0,0,0,0,0,0,0,0],
+              [0,0,0,0,0,0,0,0,0,0],
+            ];
+            
+            console.log("length: " + boardValues.length + ", mod by: " + (boardValues.length - 1));
+
+            index = Math.floor((milliseconds / 1000) % (boardValues.length - 1));
+            console.log(index + " ; " + (boardValues.length + temp.length - boardViewRange - index));
+            index = (boardValues.length + temp.length - boardViewRange) - index;
+            
+            boardValues = boardValues.slice(0, index + 1).concat(temp).concat(boardValues.slice(index + 1));
+            //console.log(boardValues);
+            //console.log("NEW length of array: " + boardValues.length);
+            gameInit = false;
+          } else {
+            //console.log("length: " + boardValues.length + ", mod by: " + (boardValues.length - boardViewRange));
+
+            index = Math.floor((milliseconds / 1000) % (boardValues.length - boardViewRange));
+            //console.log(index + " ; " + (boardValues.length - boardViewRange - index));
+            index = (boardValues.length - boardViewRange) - index; 
+          }
+
           // destroy board 
           for (i = 0; i < boardViewRange; i++) {
             for (j = 0; j < (boardwidth / piecewidth); j++) {
               $("#" + i + j).remove();
             }
           }
+          
           // generate current view of gameboard
           // based on offset into boardValues array
-          var startIndex = boardValues.length - boardOffset - boardViewRange;
+          var startIndex = index;
           var endIndex = startIndex + boardViewRange;
-          if (startIndex < 0) {
-            return 1;
-          }
 
+          //console.log("start: " + startIndex + ", end: " + endIndex);
           var currentBoard = boardValues.slice(startIndex, endIndex);
+          //console.log(currentBoard);
+          //gameOver = true;
+
 
           for (i = 0; i < boardViewRange; i++) {
             var currentRow = currentBoard[i];
@@ -226,8 +254,6 @@
               }
             }
           }
-          
-          boardOffset += 1;
         }
         
         // TODO(casey): Make this more robust
@@ -259,13 +285,13 @@
               // left arrow clicked
               shipx -= increment;
               if (shipx < 0) {
-                shipx += boardwidth - increment;
+                shipx += boardwidth;
               }
             } else if(e.keyCode == 39) {
               // right arrow clicked
               shipx += increment;
               if (shipx + shipwidth > boardwidth) {
-                shipx -= boardwidth - increment;
+                shipx -= boardwidth;
               }
             }
             $(".ship").css("left", shipx + "px");
@@ -284,7 +310,7 @@
             
             checkCollision();
           }
-        }, 1000);
+        }, 50);
       })
     </script>
 
