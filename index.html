@@ -184,7 +184,7 @@
       $(document).ready(function() {
         var assignmentId = document.getElementsByName("assignmentId")[0].value;
         if (assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE") {
-          document.getElementById("startButton").disabled = true;
+          document.getElementById("startButton").className += "disabled";
         }
         
         var gameboard = document.getElementById("gameboard");
