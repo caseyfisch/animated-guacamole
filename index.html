@@ -49,8 +49,12 @@
     <div class="section">
       <div class="container">
         <div class="row center-block">
-          <div class="col s12 m12 indigo lighten-4" id="gameboard">
+          <div class="col s12 m8 indigo lighten-4" id="gameboard">
             <!--<div id="gameboard" class="center-block light-green lighten-3">Game will be here</div>-->
+          </div>
+          <div class="col s12 m4">
+            <p>Game Duration: <span id="gamedur">0 s</span></p>
+            <p>Amount Earned: <span id="earnings">$0.000</span></p>
           </div>
         </div>
       </div>
@@ -101,7 +105,10 @@
       var gameWon = false;
       var gameDuration = 0;
       var gameInit = false;
+      var flag = false;
       
+      var playerScore = 0;
+      var timeAlive = 0;
       
       var boardViewRange = boardheight / pieceheight;
       
@@ -168,7 +175,6 @@
 
 
       $(document).ready(function() {
-        console.log("length of array: " + boardValues.length);
         var gameboard = document.getElementById("gameboard");
         var ship = $("<div class='ship amber lighten-2'><img src='icons/ship.svg'/></div>");
         $(gameboard).append(ship);
@@ -178,8 +184,10 @@
 
         document.getElementById('startButton').addEventListener('click', startGame, false);
         function startGame(){ 
-          gameStarted = true;
-          gameInit = true;
+          if (!gameStarted) {
+            gameStarted = true;
+            gameInit = true;
+          }
         }
         
         // TODO(casey): Add shooting stars or something for bonus
@@ -189,8 +197,7 @@
           
           var milliseconds = new Date().getTime();
           var index;
-          //console.log(index);
-          
+
           if (gameInit) {
             console.log("in init");
             // inject some padding into the board so ship doesn't die immediately
@@ -204,9 +211,9 @@
               [0,0,0,0,0,0,0,0,0,0],
             ];
             
-            console.log("length: " + boardValues.length + ", mod by: " + (boardValues.length - 1));
+            console.log("length: " + boardValues.length + ", mod by: " + (boardValues.length));
 
-            index = Math.floor((milliseconds / 1000) % (boardValues.length - 1));
+            index = Math.floor((milliseconds / 1000) % (boardValues.length));
             console.log(index + " ; " + (boardValues.length + temp.length - boardViewRange - index));
             index = (boardValues.length + temp.length - boardViewRange) - index;
             
@@ -215,9 +222,9 @@
             //console.log("NEW length of array: " + boardValues.length);
             gameInit = false;
           } else {
-            //console.log("length: " + boardValues.length + ", mod by: " + (boardValues.length - boardViewRange));
+            console.log("length: " + boardValues.length + ", mod by: " + (boardValues.length - boardViewRange));
 
-            index = Math.floor((milliseconds / 1000) % (boardValues.length - boardViewRange));
+            index = Math.floor((milliseconds / 1000) % (boardValues.length - boardViewRange + 1));
             //console.log(index + " ; " + (boardValues.length - boardViewRange - index));
             index = (boardValues.length - boardViewRange) - index; 
           }
@@ -234,7 +241,7 @@
           var startIndex = index;
           var endIndex = startIndex + boardViewRange;
 
-          //console.log("start: " + startIndex + ", end: " + endIndex);
+          console.log("start: " + startIndex + ", end: " + endIndex);
           var currentBoard = boardValues.slice(startIndex, endIndex);
           //console.log(currentBoard);
           //gameOver = true;
@@ -272,7 +279,6 @@
             if (pieceLeft === shipx) {
               console.log("collision!!");
               gameOver = true;
-              alert("Game over!");
               break;
             }
             
@@ -301,7 +307,7 @@
         
         setInterval(function() {
           if (gameStarted && !gameOver) {
-            var flag = generateBoard();
+            generateBoard();
 
             if (flag == 1) {
               gameOver = true;
@@ -309,8 +315,15 @@
             }
             
             checkCollision();
+            if (gameOver) {
+              alert("Game over!");
+            }
+            
+            timeAlive += 1000;
+            document.getElementById("gamedur").innerHTML= Math.floor((timeAlive) / 1000) + " s";
+            document.getElementById("earnings").innerHTML = "$" + ((Math.floor((timeAlive) / 1000)) * 0.001).toFixed(3);
           }
-        }, 50);
+        }, 1000);
       })
     </script>
 
