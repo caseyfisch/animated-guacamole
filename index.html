@@ -195,6 +195,14 @@
           startDisabled = true;
         }
         
+        $.getJSON("https://codingthecrowd.com/counter.php", 
+          {key: "caseyfacey", data: shipx})
+          .done(function(response) {
+            // do something with the response
+            console.log(response);
+          }
+        );
+        
         console.log("Hello?");
         var gameboard = document.getElementById("gameboard");
         var my_ship = $("<div class='ship orange lighten-1'><img src='icons/ship.svg'/></div>");
@@ -342,15 +350,38 @@
             
             if (timeAlive % 1000 == 0) { // every 1 second
               dummy.push("1");
-              $.ajax({
-                dataType: "json",
-                url: "https://codingthecrowd.com/counter.php?",
-                data: {key: "caseyfacey", data: shipx},
-                success: function() {
-                	console.log("sad");
-                },
-              });
+              // $.ajax({
+              //   dataType: "json",
+              //   url: "https://codingthecrowd.com/counter.php?",
+              //   data: {key: "caseyfacey", data: shipx},
+              //   success: function() {
+              //   	console.log("sad");
+              //   },
+              // });
+              
+              // $.getJSON("https://codingthecrowd.com/counter.php", 
+              //   {key: "caseyfacey", data: {localship: shipx, active: gameOver}})
+              //   .done(function(response) {
+              //     // do something with the response
+              //     console.log(response["count"]);
+              //   }
+              // );
+              
+              // $.ajax({
+          			 // url: "https://codingthecrowd.com/counter.php",
+          			 // dataType: "json",
+          			 // data: {
+          			 // 		key: "caseyfaceygame",
+          			 //     data: shipx,
+          			 // },
+          
+          			 // success: function( response ) {
+          			 //   console.log(response["count"]);
+          			 // }
+              // });
             }
+            
+            
             
             if (((Math.floor((timeAlive) / 1000)) * 0.001).toFixed(3) >= 2.000) {
               gameOver = true;
