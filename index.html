@@ -195,13 +195,22 @@
           startDisabled = true;
         }
         
-        $.getJSON("https://codingthecrowd.com/counter.php", 
-          {key: "caseyfacey", data: shipx})
-          .done(function(response) {
-            // do something with the response
-            console.log(response);
-          }
-        );
+        function poll() {
+        		$.ajax({
+        			url: "https://codingthecrowd.com/counter.php",
+        			data: {"key": "caseycat",
+        					"data": shipx},
+        			dataType: 'json',
+        			success: function(data) {
+        			  console.log(data);
+        			},
+        			complete: function() {
+        				setTimeout(poll, 200);
+        			}
+        		});
+        	}
+        	poll();
+
         
         console.log("Hello?");
         var gameboard = document.getElementById("gameboard");
