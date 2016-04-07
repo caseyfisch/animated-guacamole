@@ -340,12 +340,14 @@
         
         setInterval(function() {
           if (gameStarted && !gameOver) {
+            poll();
             generateBoard();
 
             if (flag == 1) {
               gameOver = true;
               gameWon = true;
             }
+            
             
             checkCollision();
             if (gameOver) {
@@ -361,7 +363,6 @@
             
             if (timeAlive % 1000 == 0) { // every 1 second
               dummy.push("1");
-              poll();
               // $.ajax({
               //   dataType: "json",
               //   url: "https://codingthecrowd.com/counter.php?",
