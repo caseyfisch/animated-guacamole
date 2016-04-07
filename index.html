@@ -116,6 +116,7 @@
       var startTime = 0;
       var endTime = 0;
 
+      var collectiveShipX = 0;
       
       var boardViewRange = boardheight / pieceheight;
       
@@ -196,8 +197,8 @@
         
         console.log("Hello?");
         var gameboard = document.getElementById("gameboard");
-        var ship = $("<div class='ship orange lighten-1'><img src='icons/ship.svg'/></div>");
-        $(gameboard).append(ship);
+        var my_ship = $("<div class='ship orange lighten-1'><img src='icons/ship.svg'/></div>");
+        $(gameboard).append(my_ship);
         
         shipy = (boardheight - shipheight);
         $(".ship").css("top", shipy + "px");
@@ -326,6 +327,15 @@
               gameOver = true;
               gameWon = true;
             }
+            
+            $.ajax({
+              dataType: "json",
+              url: "https://codingthecrowd.com/counter.php?",
+              data: {key: "caseyfacey", data: shipx},
+              success: function() {
+              	console.log("sad");
+              },
+            });
             
             checkCollision();
             if (gameOver) {
