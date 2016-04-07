@@ -328,15 +328,6 @@
               gameWon = true;
             }
             
-            $.ajax({
-              dataType: "json",
-              url: "https://codingthecrowd.com/counter.php?",
-              data: {key: "caseyfacey", data: shipx},
-              success: function() {
-              	console.log("sad");
-              },
-            });
-            
             checkCollision();
             if (gameOver) {
               endTime = new Date().getTime();
@@ -351,6 +342,14 @@
             
             if (timeAlive % 1000 == 0) { // every 1 second
               dummy.push("1");
+              $.ajax({
+                dataType: "json",
+                url: "https://codingthecrowd.com/counter.php?",
+                data: {key: "caseyfacey", data: shipx},
+                success: function() {
+                	console.log("sad");
+                },
+              });
             }
             
             if (((Math.floor((timeAlive) / 1000)) * 0.001).toFixed(3) >= 2.000) {
