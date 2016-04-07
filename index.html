@@ -196,21 +196,23 @@
         }
         
         function poll() {
-        		$.ajax({
-        			url: "https://codingthecrowd.com/counter.php",
-        			data: {"key": "caseycat",
-        					"data": shipx},
-        			dataType: 'json',
-        			success: function(data) {
-        			  console.log(data);
-        			},
-        			complete: function() {
-        				setTimeout(poll, 200);
-        			}
-        		});
-        	}
-        	poll();
-
+      		console.log("hi");
+      		$.ajax({
+      		  dataType: "jsonp",
+      		  url: "https://codingthecrowd.com/counter.php",
+      		  data: {
+      		  	key: "chickenbutt",
+      		  	data: shipx
+      		  },
+      		  success: function(json) {
+      		  	console.log(json["count"]);
+      		  	console.log(json["results"]);
+      		  },
+      		  error: function(error) {
+      		  	console.log(error);
+      		  }
+      		});
+      	}
         
         console.log("Hello?");
         var gameboard = document.getElementById("gameboard");
@@ -359,6 +361,7 @@
             
             if (timeAlive % 1000 == 0) { // every 1 second
               dummy.push("1");
+              poll();
               // $.ajax({
               //   dataType: "json",
               //   url: "https://codingthecrowd.com/counter.php?",
