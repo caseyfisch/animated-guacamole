@@ -209,8 +209,7 @@
       		  	data: piecex
       		  },
       		  success: function(json) {
-      		  	//console.log(json["count"]);
-      		  	//console.log(json["results"]);
+
       		  	serverTime = json["time"];
       		  	numPlayers = json["count"];
     		  	  console.log(json["results"]);
@@ -220,20 +219,19 @@
       		  	  aggregateLocation += parseInt(playerPosition);
       		  	  console.log(aggregateLocation);
       		  	}
-      		  // 	console.log(aggregateLocation);
+      		  	
       		   	aggregateLocation /= numPlayers;
-      		  // 	console.log(aggregateLocation);
-      		  aggregateLocation = Math.ceil(aggregateLocation/50)*50;
-      		  shipx = aggregateLocation;
-      		  $(".ship").css("left", shipx + "px");
-
-      		  aggregateLocation = 0;
-      		  },
-      		  error: function(error) {
-      		  	console.log(error);
-      		  }
+        		  aggregateLocation = Math.ceil(aggregateLocation/50)*50;
+        		  shipx = aggregateLocation;
+        		  $(".ship").css("left", shipx + "px");
+  
+        		  aggregateLocation = 0;
+        		  },
+        		  error: function(error) {
+        		  	console.log(error);
+        		  }
       		});
-      	}
+    	  }
         
         console.log("Hello?");
         var gameboard = document.getElementById("gameboard");
@@ -364,7 +362,6 @@
         
         setInterval(function() {
           if (gameStarted && !gameOver) {
-            poll();
             generateBoard();
 
             if (flag == 1) {
@@ -387,6 +384,11 @@
             
             if (timeAlive % 1000 == 0) { // every 1 second
               dummy.push("1");
+
+            }
+            
+            if (timeAlive % 200 == 0) {
+              poll();
             }
             
             if (((Math.floor((timeAlive) / 1000)) * 0.001).toFixed(3) >= 2.000) {
