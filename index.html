@@ -235,11 +235,11 @@
         
         console.log("Hello?");
         var gameboard = document.getElementById("gameboard");
-        var collective_ship = $("<div class='ship orange lighten-1'><img src='icons/ship.svg'/></div>");
-        $(gameboard).append(collective_ship);
+        var collective_ship = $("<div class='ship '><img src='icons/ship.svg'/></div>");
         
         var local_ship = $("<div class='player blue lighten-1'></div>");
         $(gameboard).append(local_ship);
+        $(gameboard).append(collective_ship);
 
         shipy = (boardheight - shipheight);
         $(".ship").css("top", shipy + "px");
