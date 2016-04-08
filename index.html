@@ -182,6 +182,10 @@
       ];
 
       var id = "";
+      
+      var serverTime = 0;
+      var numPlayers = 1;
+      var aggregateLocation = 0;
 
 
       $(document).ready(function() {
@@ -202,11 +206,28 @@
       		  url: "https://codingthecrowd.com/counter.php",
       		  data: {
       		  	key: "chickenbutt",
-      		  	data: shipx
+      		  	data: piecex
       		  },
       		  success: function(json) {
-      		  	console.log(json["count"]);
-      		  	console.log(json["results"]);
+      		  	//console.log(json["count"]);
+      		  	//console.log(json["results"]);
+      		  	serverTime = json["time"];
+      		  	numPlayers = json["count"];
+    		  	  console.log(json["results"]);
+
+      		  	for (var i = 0; i < numPlayers; i++) {
+      		  	  var playerPosition = json.results[i].data;
+      		  	  aggregateLocation += parseInt(playerPosition);
+      		  	  console.log(aggregateLocation);
+      		  	}
+      		  // 	console.log(aggregateLocation);
+      		   	aggregateLocation /= numPlayers;
+      		  // 	console.log(aggregateLocation);
+      		  aggregateLocation = Math.ceil(aggregateLocation/50)*50;
+      		  shipx = aggregateLocation;
+      		  $(".ship").css("left", shipx + "px");
+
+      		  aggregateLocation = 0;
       		  },
       		  error: function(error) {
       		  	console.log(error);
@@ -216,11 +237,16 @@
         
         console.log("Hello?");
         var gameboard = document.getElementById("gameboard");
-        var my_ship = $("<div class='ship orange lighten-1'><img src='icons/ship.svg'/></div>");
-        $(gameboard).append(my_ship);
+        var collective_ship = $("<div class='ship orange lighten-1'><img src='icons/ship.svg'/></div>");
+        $(gameboard).append(collective_ship);
         
+        var local_ship = $("<div class='player blue lighten-1'></div>");
+        $(gameboard).append(local_ship);
+
         shipy = (boardheight - shipheight);
         $(".ship").css("top", shipy + "px");
+        
+        $(".player").css("top", shipy + "px");
 
         document.getElementById('startButton').addEventListener('click', startGame, false);
         function startGame(){ 
@@ -296,14 +322,12 @@
           }
         }
         
-        // TODO(casey): Make this more robust
         function checkCollision() {
           var pieces = document.getElementsByClassName("piece");
           for (var i = 0; i < pieces.length; i++) {
             var curPiece = pieces[i];
             var pieceLeft =  parseInt(curPiece.style.left);
             var pieceBottom = parseInt(curPiece.style.top) + pieceheight;
-            
             
             if (!(pieceBottom > shipy)) {
               continue;
@@ -322,18 +346,18 @@
           if (!gameOver) {
             if(e.keyCode==37) {
               // left arrow clicked
-              shipx -= increment;
-              if (shipx < 0) {
-                shipx += boardwidth;
+              piecex -= increment;
+              if (piecex < 0) {
+                piecex += boardwidth;
               }
             } else if(e.keyCode == 39) {
               // right arrow clicked
-              shipx += increment;
-              if (shipx + shipwidth > boardwidth) {
-                shipx -= boardwidth;
+              piecex += increment;
+              if (piecex + shipwidth > boardwidth) {
+                piecex -= boardwidth;
               }
             }
-            $(".ship").css("left", shipx + "px");
+            $(".player").css("left", piecex + "px");
           }
         });
         
@@ -363,38 +387,7 @@
             
             if (timeAlive % 1000 == 0) { // every 1 second
               dummy.push("1");
-              // $.ajax({
-              //   dataType: "json",
-              //   url: "https://codingthecrowd.com/counter.php?",
-              //   data: {key: "caseyfacey", data: shipx},
-              //   success: function() {
-              //   	console.log("sad");
-              //   },
-              // });
-              
-              // $.getJSON("https://codingthecrowd.com/counter.php", 
-              //   {key: "caseyfacey", data: {localship: shipx, active: gameOver}})
-              //   .done(function(response) {
-              //     // do something with the response
-              //     console.log(response["count"]);
-              //   }
-              // );
-              
-              // $.ajax({
-          			 // url: "https://codingthecrowd.com/counter.php",
-          			 // dataType: "json",
-          			 // data: {
-          			 // 		key: "caseyfaceygame",
-          			 //     data: shipx,
-          			 // },
-          
-          			 // success: function( response ) {
-          			 //   console.log(response["count"]);
-          			 // }
-              // });
             }
-            
-            
             
             if (((Math.floor((timeAlive) / 1000)) * 0.001).toFixed(3) >= 2.000) {
               gameOver = true;
