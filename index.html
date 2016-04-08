@@ -254,12 +254,12 @@
         		
         		  
         		  if (direction > 0) {
-        		    shipx += increment;
+        		    shipx += increment * direction;
                 if (shipx + shipwidth > boardwidth) {
                   shipx -= boardwidth;
                 }
         		  } else if (direction < 0) {
-        		    shipx -= increment;
+        		    shipx -= increment * direction * -1;
                 if (shipx < 0) {
                   shipx += boardwidth;
                 }
