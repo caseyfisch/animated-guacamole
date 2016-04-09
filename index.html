@@ -230,42 +230,42 @@
         		  // var most_recent_index = 0;
         		  // var most_recent_time = 0;
         		  
-        		  var direction = 0;
-        		  for (var i = 0; i < numPlayers; i++) {
-        		    var location = parseInt(json.results[i].data);
-        		    if (location > shipx) {
-        		      direction += 1;
-        		    } else if (location < shipx) {
-        		      direction -= 1;
-        		    }
-        		    // var temp_time = json.results[i].timestamp;
-        		    // temp_time = temp_time.split(" ");
-        		    // temp_time = temp_time[1].split(":");
+        		  // var direction = 0;
+        		  // for (var i = 0; i < numPlayers; i++) {
+        		  //   var location = parseInt(json.results[i].data);
+        		  //   if (location > shipx) {
+        		  //     direction += 1;
+        		  //   } else if (location < shipx) {
+        		  //     direction -= 1;
+        		  //   }
+        		  //   // var temp_time = json.results[i].timestamp;
+        		  //   // temp_time = temp_time.split(" ");
+        		  //   // temp_time = temp_time[1].split(":");
         		    
-        		    // var comparable_time = temp_time[0] * 3600 + temp_time[1] * 60 + temp_time[2];
-        		    // if (most_recent_time < comparable_time) {
-        		    //   most_recent_time = comparable_time;
-        		    //   most_recent_index = i;
-        		    // }
-        		  }
+        		  //   // var comparable_time = temp_time[0] * 3600 + temp_time[1] * 60 + temp_time[2];
+        		  //   // if (most_recent_time < comparable_time) {
+        		  //   //   most_recent_time = comparable_time;
+        		  //   //   most_recent_index = i;
+        		  //   // }
+        		  // }
         		  
         		  // var specialLocation = parseInt(json.results[most_recent_index].data);
         		  // console.log(specialLocation);
         		
         		  
-        		  if (direction > 0) {
-        		    shipx += increment * direction;
-                if (shipx + shipwidth > boardwidth) {
-                  shipx -= boardwidth;
-                }
-        		  } else if (direction < 0) {
-        		    shipx -= increment * direction * -1;
-                if (shipx < 0) {
-                  shipx += boardwidth;
-                }
-        		  } else if (direction == 0) {
-        		    shipx = shipx;
-        		  }
+        		  // if (direction > 0) {
+        		  //   shipx += increment * direction;
+            //     if (shipx + shipwidth > boardwidth) {
+            //       shipx -= boardwidth;
+            //     }
+        		  // } else if (direction < 0) {
+        		  //   shipx -= increment * direction * -1;
+            //     if (shipx < 0) {
+            //       shipx += boardwidth;
+            //     }
+        		  // } else if (direction == 0) {
+        		  //   shipx = shipx;
+        		  // }
         		  
         		  $(".ship").css("left", shipx + "px");
         		  
@@ -291,6 +291,7 @@
 
         document.getElementById('startButton').addEventListener('click', startGame, false);
         function startGame(){ 
+
           if (!gameStarted && !startDisabled) {
             gameStarted = true;
             gameInit = true;
@@ -309,30 +310,39 @@
         function generateBoard() {
           var i, j;
           var milliseconds = new Date().getTime();
+          milliseconds = serverTime * 1000;
           var index;
 
-          if (gameInit) {
-            //console.log("in init");
-            // inject some padding into the board so ship doesn't die immediately
-            var temp = [
-              [0,0,0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0,0,0],
-            ];
+          // if (gameInit) {
+          //   //console.log("in init");
+          //   // inject some padding into the board so ship doesn't die immediately
+          //   var temp = [
+          //     [0,0,0,0,0,0,0,0,0,0],
+          //     [0,0,0,0,0,0,0,0,0,0],
+          //     [0,0,0,0,0,0,0,0,0,0],
+          //     [0,0,0,0,0,0,0,0,0,0],
+          //     [0,0,0,0,0,0,0,0,0,0],
+          //     [0,0,0,0,0,0,0,0,0,0],
+          //     [0,0,0,0,0,0,0,0,0,0],
+          //   ];
   
-            index = Math.floor((milliseconds / 1000) % (boardValues.length));
-            index = (boardValues.length + temp.length - boardViewRange) - index;
-            boardValues = boardValues.slice(0, index + 1).concat(temp).concat(boardValues.slice(index + 1));
-            
-            gameInit = false;
-          } else {
-            index = Math.floor((milliseconds / 1000) % (boardValues.length - boardViewRange + 1));
-            index = (boardValues.length - boardViewRange) - index; 
-          }
+          //   index = Math.floor((milliseconds / 1000) % (boardValues.length));
+          //   index = (boardValues.length + temp.length - boardViewRange) - index;
+          //   boardValues = boardValues.slice(0, index + 1).concat(temp).concat(boardValues.slice(index + 1));
+          //   console.log("Index: " + index);
+
+          //   gameInit = false;
+          // } else {
+          //   index = Math.floor((milliseconds / 1000) % (boardValues.length - boardViewRange + 1));
+          //   index = (boardValues.length - boardViewRange) - index; 
+          //   console.log("Index: " + index);
+
+          // }
+          
+          console.log(serverTime);
+          var index = Math.floor((milliseconds / 1000) % (boardValues.length));
+          index = boardValues.length - index - 1; 
+          console.log(index);
 
           // destroy board 
           for (i = 0; i < boardViewRange; i++) {
@@ -344,8 +354,19 @@
           // generate current view of gameboard
           // based on offset into boardValues array
           var startIndex = index;
-          var endIndex = startIndex + boardViewRange;
-          var currentBoard = boardValues.slice(startIndex, endIndex);
+          var endIndex, currentBoard;
+          if (startIndex + boardViewRange > boardValues.length - 1) {
+            var firstChunk = boardValues.slice(startIndex); // to the end
+            var difference = boardViewRange - (boardValues.length - startIndex);
+            var secondChunk = boardValues.slice(0, difference);
+            currentBoard = firstChunk.concat(secondChunk);
+            endIndex = 0;
+          } else {
+            endIndex = startIndex + boardViewRange;
+            currentBoard = boardValues.slice(startIndex, endIndex);
+          }
+          
+          console.log(currentBoard);
 
           for (i = 0; i < boardViewRange; i++) {
             var currentRow = currentBoard[i];
@@ -404,6 +425,10 @@
         
         
         setInterval(function() {
+          if (timeAlive % 200 == 0) {
+              setTimeout(poll, 200);
+          }
+          
           if (gameStarted && !gameOver) {
             generateBoard();
 
@@ -430,9 +455,7 @@
 
             }
             
-            if (timeAlive % 200 == 0) {
-              poll();
-            }
+
             
             if (((Math.floor((timeAlive) / 1000)) * 0.001).toFixed(3) >= 2.000) {
               gameOver = true;
