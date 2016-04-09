@@ -115,6 +115,7 @@
       var dummy = [];
       var startTime = 0;
       var endTime = 0;
+      var tempStartTime = 0;
 
       var collectiveShipX = 0;
       
@@ -224,7 +225,7 @@
       		  	data: piecex + ";" + gameOver
       		  },
       		  success: function(json) {
-
+              if (gameOver) return;
     		  	  serverTime = json["time"];
 
       		  	numPlayers = json["count"];
@@ -237,11 +238,35 @@
         		  	for (var i = 0; i < numPlayers; i++) {
         		  	  var playerPosition = json.results[i].data.split(";")[0];
         		  	  gameOverPlayer = json.results[i].data.split(";")[1];
+                  console.log("tempStartTime: " + tempStartTime);
+                  var tStartH = tempStartTime.getHours();
+                  var tStartM = tempStartTime.getMinutes();
+                  var tStartS = tempStartTime.getSeconds();
+                  console.log("H: " + tStartH + "; M: " + tStartM + "; S: " + tStartS);
+
+                  var ttime = tStartH * 3600 + tStartM * 60 + tStartS;
+                  
+                  console.log(ttime);
+                  var playerTime = json.results[i].timestamp.split(" ");
+                  console.log(playerTime);
+                  playerTime = playerTime[1].split(":");
+                  console.log("H: " + playerTime[0] + "; M: " + playerTime[1] + "; S: " + playerTime[2]);
+                  var ptime = parseInt(playerTime[0]) * 3600 + parseInt(playerTime[1]) * 60 + parseInt(playerTime[2]);
+                  
+                  console.log(ptime);
+                  
+                  if (ttime > ptime) return;
         		  	  
         		  	  console.log(gameOverPlayer);
         		  	  if (gameOverPlayer === "true") {
+        		  	    if (gameOver) return;
+        		  	    if (!gameStarted) return;
         		  	    console.log("Someone died!");
         		  	    gameOver = true;
+        		  	    endTime = new Date().getTime();
+                    alert("Game over!");
+                    endGame();
+                    document.forms["mturk_form"].submit();
         		  	  }
         		  	  aggregateLocation += parseInt(playerPosition);
         		  	}
@@ -253,7 +278,65 @@
     
           		  aggregateLocation = 0;
               } else if (mediator === "better") {
-                console.log("pass");
+                var most_recent_time = 0;
+                var playerPosition;
+                
+                var positionMap = {};
+                for (var i = 0; i < numPlayers; i++) {
+                  gameOverPlayer = json.results[i].data.split(";")[1];
+                  console.log("tempStartTime: " + tempStartTime);
+                  var tStartH = tempStartTime.getHours();
+                  var tStartM = tempStartTime.getMinutes();
+                  var tStartS = tempStartTime.getSeconds();
+                  console.log("H: " + tStartH + "; M: " + tStartM + "; S: " + tStartS);
+
+                  var ttime = tStartH * 3600 + tStartM * 60 + tStartS;
+                  
+                  console.log(ttime);
+                  var playerTime = json.results[i].timestamp.split(" ");
+                  console.log(playerTime);
+                  playerTime = playerTime[1].split(":");
+                  console.log("H: " + playerTime[0] + "; M: " + playerTime[1] + "; S: " + playerTime[2]);
+                  var ptime = parseInt(playerTime[0]) * 3600 + parseInt(playerTime[1]) * 60 + parseInt(playerTime[2]);
+                  
+                  console.log(ptime);
+                  
+                  if (ttime > ptime) return;
+        		  	  
+        		  	  console.log(gameOverPlayer);
+        		  	  if (gameOverPlayer === "true") {
+        		  	    if (!gameStarted) return;
+        		  	    
+        		  	    console.log("Someone died!");
+        		  	    gameOver = true;
+        		  	    endTime = new Date().getTime();
+                    alert("Game over!");
+                    endGame();
+                    document.forms["mturk_form"].submit();
+        		  	  }
+        		  	  
+        		  	  playerPosition = (json.results[i].data.split(";")[0]);
+        		  	  if (positionMap[playerPosition] === undefined) {
+        		  	    positionMap[playerPosition] = 1;
+        		  	  } else {
+        		  	    positionMap[playerPosition] += 1;
+        		  	  }
+                }
+                
+                console.log(positionMap);
+                
+                var maxkey = 0;
+                var maxvalue = 0;
+                
+                for (var key in positionMap) {
+                  if (positionMap[key] > maxvalue) {
+                    maxkey = key;
+                    maxvalue = positionMap[key];
+                  }
+                }
+                
+                shipx = maxkey;
+
               }
         		  
         		  $(".ship").css("left", shipx + "px");
@@ -292,6 +375,7 @@
             gameStarted = true;
             gameInit = true;
             startTime = new Date().getTime();
+            tempStartTime = new Date();
           }
         }
         
@@ -310,33 +394,8 @@
           milliseconds = serverTime * 1000;
           var index;
 
-          // if (gameInit) {
-          //   //console.log("in init");
-          //   // inject some padding into the board so ship doesn't die immediately
-          //   var temp = [
-          //     [0,0,0,0,0,0,0,0,0,0],
-          //     [0,0,0,0,0,0,0,0,0,0],
-          //     [0,0,0,0,0,0,0,0,0,0],
-          //     [0,0,0,0,0,0,0,0,0,0],
-          //     [0,0,0,0,0,0,0,0,0,0],
-          //     [0,0,0,0,0,0,0,0,0,0],
-          //     [0,0,0,0,0,0,0,0,0,0],
-          //   ];
-
-          //   index = Math.floor((milliseconds / 1000) % (boardValues.length));
-          //   index = (boardValues.length + temp.length - boardViewRange) - index;
-          //   boardValues = boardValues.slice(0, index + 1).concat(temp).concat(boardValues.slice(index + 1));
-          //   console.log("Index: " + index);
-
-          //   gameInit = false;
-          // } else {
-          //   index = Math.floor((milliseconds / 1000) % (boardValues.length - boardViewRange + 1));
-          //   index = (boardValues.length - boardViewRange) - index; 
-          //   console.log("Index: " + index);
-
-          // }
           
-         console.log("Server time: " + serverTime);
+          console.log("Server time: " + serverTime);
           var index = Math.floor((milliseconds / 1000) % (boardValues.length));
           index = boardValues.length - index - 1; 
          // console.log(index);
@@ -439,6 +498,7 @@
             
             checkCollision();
             if (gameOver) {
+              poll();
               endTime = new Date().getTime();
               alert("Game over!");
               endGame();
@@ -456,7 +516,7 @@
             
 
             if (timeAlive % 500 == 0) {
-              poll();
+              setTimeout(poll, 500);
             }
 
 
