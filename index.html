@@ -291,6 +291,7 @@
 
         document.getElementById('startButton').addEventListener('click', startGame, false);
         function startGame(){ 
+
           if (!gameStarted && !startDisabled) {
             gameStarted = true;
             gameInit = true;
@@ -312,31 +313,36 @@
           milliseconds = serverTime * 1000;
           var index;
 
-          if (gameInit) {
-            //console.log("in init");
-            // inject some padding into the board so ship doesn't die immediately
-            var temp = [
-              [0,0,0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0,0,0],
-            ];
-  
-            index = Math.floor((milliseconds / 1000) % (boardValues.length));
-            index = (boardValues.length + temp.length - boardViewRange) - index;
-            boardValues = boardValues.slice(0, index + 1).concat(temp).concat(boardValues.slice(index + 1));
-            console.log("Index: " + index);
+          // if (gameInit) {
+          //   //console.log("in init");
+          //   // inject some padding into the board so ship doesn't die immediately
+          //   var temp = [
+          //     [0,0,0,0,0,0,0,0,0,0],
+          //     [0,0,0,0,0,0,0,0,0,0],
+          //     [0,0,0,0,0,0,0,0,0,0],
+          //     [0,0,0,0,0,0,0,0,0,0],
+          //     [0,0,0,0,0,0,0,0,0,0],
+          //     [0,0,0,0,0,0,0,0,0,0],
+          //     [0,0,0,0,0,0,0,0,0,0],
+          //   ];
 
-            gameInit = false;
-          } else {
-            index = Math.floor((milliseconds / 1000) % (boardValues.length - boardViewRange + 1));
-            index = (boardValues.length - boardViewRange) - index; 
-            console.log("Index: " + index);
+          //   index = Math.floor((milliseconds / 1000) % (boardValues.length));
+          //   index = (boardValues.length + temp.length - boardViewRange) - index;
+          //   boardValues = boardValues.slice(0, index + 1).concat(temp).concat(boardValues.slice(index + 1));
+          //   console.log("Index: " + index);
 
-          }
+          //   gameInit = false;
+          // } else {
+          //   index = Math.floor((milliseconds / 1000) % (boardValues.length - boardViewRange + 1));
+          //   index = (boardValues.length - boardViewRange) - index; 
+          //   console.log("Index: " + index);
+
+          // }
+          
+          console.log(serverTime);
+          var index = Math.floor((milliseconds / 1000) % (boardValues.length));
+          index = boardValues.length - index - 1; 
+          console.log(index);
 
           // destroy board 
           for (i = 0; i < boardViewRange; i++) {
@@ -348,8 +354,19 @@
           // generate current view of gameboard
           // based on offset into boardValues array
           var startIndex = index;
-          var endIndex = startIndex + boardViewRange;
-          var currentBoard = boardValues.slice(startIndex, endIndex);
+          var endIndex, currentBoard;
+          if (startIndex + boardViewRange > boardValues.length - 1) {
+            var firstChunk = boardValues.slice(startIndex); // to the end
+            var difference = boardViewRange - (boardValues.length - startIndex);
+            var secondChunk = boardValues.slice(0, difference);
+            currentBoard = firstChunk.concat(secondChunk);
+            endIndex = 0;
+          } else {
+            endIndex = startIndex + boardViewRange;
+            currentBoard = boardValues.slice(startIndex, endIndex);
+          }
+          
+          console.log(currentBoard);
 
           for (i = 0; i < boardViewRange; i++) {
             var currentRow = currentBoard[i];
@@ -408,6 +425,7 @@
         
         
         setInterval(function() {
+          
           if (gameStarted && !gameOver) {
             generateBoard();
 
@@ -434,9 +452,12 @@
 
             }
             
+
             if (timeAlive % 200 == 0) {
               setTimeout(poll, 200);
             }
+
+
             
             if (((Math.floor((timeAlive) / 1000)) * 0.001).toFixed(3) >= 2.000) {
               gameOver = true;
