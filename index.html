@@ -200,33 +200,41 @@
         }
         
         function poll() {
-      		console.log("hi");
+      		//console.log("hi");
       		$.ajax({
       		  dataType: "jsonp",
       		  url: "https://codingthecrowd.com/counter.php",
       		  data: {
       		  	key: "chickenbutt",
-      		  	data: piecex
+      		  	data: piecex + ";" + gameOver
       		  },
       		  success: function(json) {
 
-      		  	serverTime = json["time"];
+    		  	  serverTime = json["time"];
+
       		  	numPlayers = json["count"];
       		  	console.log("num players: " + numPlayers);
-    		  	  console.log(json["results"]);
-
-      		  // 	for (var i = 0; i < numPlayers; i++) {
-      		  // 	  var playerPosition = json.results[i].data;
-      		  // 	  aggregateLocation += parseInt(playerPosition);
-      		  // 	  console.log(aggregateLocation);
-      		  // 	}
       		  	
-      		  // 	aggregateLocation /= numPlayers;
-        		//   aggregateLocation = Math.ceil(aggregateLocation/50)*50;
-        		//   shipx = aggregateLocation;
-        		//   $(".ship").css("left", shipx + "px");
+      		  	var gameOverPlayer = false;
+    		  	 // console.log(json["results"]);
+
+      		  	for (var i = 0; i < numPlayers; i++) {
+      		  	  var playerPosition = json.results[i].data.split(";")[0];
+      		  	  gameOverPlayer = json.results[i].data.split(";")[1];
+      		  	  
+      		  	  if (gameOverPlayer === true) {
+      		  	    gameOver = true;
+      		  	  }
+      		  	  aggregateLocation += parseInt(playerPosition);
+      		  	  console.log(aggregateLocation);
+      		  	}
+      		  	
+      		  	aggregateLocation /= numPlayers;
+        		  aggregateLocation = Math.ceil(aggregateLocation/50)*50;
+        		  shipx = aggregateLocation;
+        		
   
-        		//   aggregateLocation = 0;
+        		  aggregateLocation = 0;
         		  // var most_recent_index = 0;
         		  // var most_recent_time = 0;
         		  
@@ -276,7 +284,7 @@
       		});
     	  }
         
-        console.log("Hello?");
+       // console.log("Hello?");
         var gameboard = document.getElementById("gameboard");
         var collective_ship = $("<div class='ship '><img src='icons/ship.svg'/></div>");
         
@@ -299,6 +307,7 @@
         function startGame(){ 
 
           if (!gameStarted && !startDisabled) {
+            getServerTime();
             gameStarted = true;
             gameInit = true;
             startTime = new Date().getTime();
@@ -316,6 +325,7 @@
         function generateBoard() {
           var i, j;
           var milliseconds = new Date().getTime();
+          serverTime += 1;
           milliseconds = serverTime * 1000;
           var index;
 
@@ -345,10 +355,10 @@
 
           // }
           
-          console.log(serverTime);
+         console.log(serverTime);
           var index = Math.floor((milliseconds / 1000) % (boardValues.length));
           index = boardValues.length - index - 1; 
-          console.log(index);
+         // console.log(index);
 
           // destroy board 
           for (i = 0; i < boardViewRange; i++) {
@@ -372,7 +382,7 @@
             currentBoard = boardValues.slice(startIndex, endIndex);
           }
           
-          console.log(currentBoard);
+         // console.log(currentBoard);
 
           for (i = 0; i < boardViewRange; i++) {
             var currentRow = currentBoard[i];
@@ -433,7 +443,12 @@
         setInterval(function() {
           
           if (gameStarted && !gameOver) {
-            generateBoard();
+            if (timeAlive % 1000 == 0) {
+              generateBoard();
+            }
+            
+            $(".ship").css("left", shipx + "px");
+
 
             if (flag == 1) {
               gameOver = true;
@@ -459,8 +474,8 @@
             }
             
 
-            if (timeAlive % 200 == 0) {
-              setTimeout(poll, 200);
+            if (timeAlive % 500 == 0) {
+              poll();
             }
 
 
