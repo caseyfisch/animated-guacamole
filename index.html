@@ -222,7 +222,9 @@
       		  	  var playerPosition = json.results[i].data.split(";")[0];
       		  	  gameOverPlayer = json.results[i].data.split(";")[1];
       		  	  
-      		  	  if (gameOverPlayer === true) {
+      		  	  console.log(gameOverPlayer);
+      		  	  if (gameOverPlayer === "true") {
+      		  	    console.log("Someone died!");
       		  	    gameOver = true;
       		  	  }
       		  	  aggregateLocation += parseInt(playerPosition);
