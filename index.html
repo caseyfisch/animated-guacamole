@@ -226,7 +226,6 @@
       		  	    gameOver = true;
       		  	  }
       		  	  aggregateLocation += parseInt(playerPosition);
-      		  	  console.log(aggregateLocation);
       		  	}
       		  	
       		  	aggregateLocation /= numPlayers;
@@ -235,45 +234,6 @@
         		
   
         		  aggregateLocation = 0;
-        		  // var most_recent_index = 0;
-        		  // var most_recent_time = 0;
-        		  
-        		  // var direction = 0;
-        		  // for (var i = 0; i < numPlayers; i++) {
-        		  //   var location = parseInt(json.results[i].data);
-        		  //   if (location > shipx) {
-        		  //     direction += 1;
-        		  //   } else if (location < shipx) {
-        		  //     direction -= 1;
-        		  //   }
-        		  //   // var temp_time = json.results[i].timestamp;
-        		  //   // temp_time = temp_time.split(" ");
-        		  //   // temp_time = temp_time[1].split(":");
-        		    
-        		  //   // var comparable_time = temp_time[0] * 3600 + temp_time[1] * 60 + temp_time[2];
-        		  //   // if (most_recent_time < comparable_time) {
-        		  //   //   most_recent_time = comparable_time;
-        		  //   //   most_recent_index = i;
-        		  //   // }
-        		  // }
-        		  
-        		  // var specialLocation = parseInt(json.results[most_recent_index].data);
-        		  // console.log(specialLocation);
-        		
-        		  
-        		  // if (direction > 0) {
-        		  //   shipx += increment * direction;
-            //     if (shipx + shipwidth > boardwidth) {
-            //       shipx -= boardwidth;
-            //     }
-        		  // } else if (direction < 0) {
-        		  //   shipx -= increment * direction * -1;
-            //     if (shipx < 0) {
-            //       shipx += boardwidth;
-            //     }
-        		  // } else if (direction == 0) {
-        		  //   shipx = shipx;
-        		  // }
         		  
         		  $(".ship").css("left", shipx + "px");
         		  
@@ -355,7 +315,7 @@
 
           // }
           
-         console.log(serverTime);
+         console.log("Server time: " + serverTime);
           var index = Math.floor((milliseconds / 1000) % (boardValues.length));
           index = boardValues.length - index - 1; 
          // console.log(index);
