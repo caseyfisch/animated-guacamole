@@ -289,6 +289,12 @@
         
         $(".player").css("top", shipy + "px");
 
+        document.getElementById('startButton').addEventListener('mouseover', getServerTime, false);
+        
+        function getServerTime() {
+          poll();
+        }
+
         document.getElementById('startButton').addEventListener('click', startGame, false);
         function startGame(){ 
 
