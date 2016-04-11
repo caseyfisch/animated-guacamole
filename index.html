@@ -216,7 +216,6 @@
         }
         
         function poll() {
-      		//console.log("hi");
       		$.ajax({
       		  dataType: "jsonp",
       		  url: "https://codingthecrowd.com/counter.php",
@@ -229,39 +228,28 @@
     		  	  serverTime = json["time"];
 
       		  	numPlayers = json["count"];
-      		  	console.log("num players: " + numPlayers);
-      		  	
+
       		  	var gameOverPlayer = false;
-    		  	 // console.log(json["results"]);
 
               if (mediator === "average") {
         		  	for (var i = 0; i < numPlayers; i++) {
         		  	  var playerPosition = json.results[i].data.split(";")[0];
         		  	  gameOverPlayer = json.results[i].data.split(";")[1];
-                  console.log("tempStartTime: " + tempStartTime);
                   var tStartH = tempStartTime.getHours();
                   var tStartM = tempStartTime.getMinutes();
                   var tStartS = tempStartTime.getSeconds();
-                  console.log("H: " + tStartH + "; M: " + tStartM + "; S: " + tStartS);
 
                   var ttime = tStartH * 3600 + tStartM * 60 + tStartS;
                   
-                  console.log(ttime);
                   var playerTime = json.results[i].timestamp.split(" ");
-                  console.log(playerTime);
                   playerTime = playerTime[1].split(":");
-                  console.log("H: " + playerTime[0] + "; M: " + playerTime[1] + "; S: " + playerTime[2]);
                   var ptime = parseInt(playerTime[0]) * 3600 + parseInt(playerTime[1]) * 60 + parseInt(playerTime[2]);
-                  
-                  console.log(ptime);
                   
                   if (ttime > ptime) return;
         		  	  
-        		  	  console.log(gameOverPlayer);
         		  	  if (gameOverPlayer === "true") {
         		  	    if (gameOver) return;
         		  	    if (!gameStarted) return;
-        		  	    console.log("Someone died!");
         		  	    gameOver = true;
         		  	    endTime = new Date().getTime();
                     alert("Game over!");
@@ -284,30 +272,21 @@
                 var positionMap = {};
                 for (var i = 0; i < numPlayers; i++) {
                   gameOverPlayer = json.results[i].data.split(";")[1];
-                  console.log("tempStartTime: " + tempStartTime);
                   var tStartH = tempStartTime.getHours();
                   var tStartM = tempStartTime.getMinutes();
                   var tStartS = tempStartTime.getSeconds();
-                  console.log("H: " + tStartH + "; M: " + tStartM + "; S: " + tStartS);
 
                   var ttime = tStartH * 3600 + tStartM * 60 + tStartS;
                   
-                  console.log(ttime);
                   var playerTime = json.results[i].timestamp.split(" ");
-                  console.log(playerTime);
                   playerTime = playerTime[1].split(":");
-                  console.log("H: " + playerTime[0] + "; M: " + playerTime[1] + "; S: " + playerTime[2]);
                   var ptime = parseInt(playerTime[0]) * 3600 + parseInt(playerTime[1]) * 60 + parseInt(playerTime[2]);
-                  
-                  console.log(ptime);
                   
                   if (ttime > ptime) return;
         		  	  
-        		  	  console.log(gameOverPlayer);
         		  	  if (gameOverPlayer === "true") {
         		  	    if (!gameStarted) return;
         		  	    
-        		  	    console.log("Someone died!");
         		  	    gameOver = true;
         		  	    endTime = new Date().getTime();
                     alert("Game over!");
@@ -322,8 +301,6 @@
         		  	    positionMap[playerPosition] += 1;
         		  	  }
                 }
-                
-                console.log(positionMap);
                 
                 var maxkey = 0;
                 var maxvalue = 0;
@@ -348,7 +325,6 @@
       		});
     	  }
         
-       // console.log("Hello?");
         var gameboard = document.getElementById("gameboard");
         var collective_ship = $("<div class='ship '><img src='icons/ship.svg'/></div>");
         
@@ -395,10 +371,8 @@
           var index;
 
           
-          console.log("Server time: " + serverTime);
           var index = Math.floor((milliseconds / 1000) % (boardValues.length));
           index = boardValues.length - index - 1; 
-         // console.log(index);
 
           // destroy board 
           for (i = 0; i < boardViewRange; i++) {
@@ -422,7 +396,6 @@
             currentBoard = boardValues.slice(startIndex, endIndex);
           }
           
-         // console.log(currentBoard);
 
           for (i = 0; i < boardViewRange; i++) {
             var currentRow = currentBoard[i];
@@ -452,7 +425,6 @@
             }
 
             if (pieceLeft === shipx) {
-              //console.log("collision!!");
               gameOver = true;
               break;
             }
